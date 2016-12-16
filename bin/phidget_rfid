@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+#require "bundler/setup"
+module PhidgetRfid
+
+  require 'highline'
+  require 'cli-console'
+  require "phidget_rfid"
+  require 'phidget_rfid/commands'
+
+  # You can add fixtures and/or initialization code here to make experimenting
+  # with your gem easier. You can also use a different console, if you like.
+
+  # (If you use this, don't forget to add pry to your Gemfile!)
+  # require "pry"
+  # Pry.start
+
+  #require "irb"
+  #IRB.start
+
+  Dir.chdir(File.dirname(__FILE__))
+
+  rfid = RfidHandler.new
+  io = HighLine.new
+  console = CLI::Console.new(io)
+  commands = Commands.new(rfid)
+
+
+  console.addCommand('read', commands.method(:read), 'Read RFID tag')
+  console.addCommand('write', commands.method(:write), 'Write into the RFID tag')
+  console.addCommand('protocol', commands.method(:protocol), 'Display RFID Tag')
+  console.addCommand('device', commands.method(:device), 'Display RFID Reader info')
+  console.addCommand('clear', commands.method(:clear), 'Clear Console')
+  console.addCommand('log', commands.method(:log), 'RFID Log')
+  console.addHelpCommand('help', 'Help')
+  console.addExitCommand('exit', 'Exit from program')
+  #console.addAlias('quit', 'exit')
+
+  console.start("%s> ",["RFID"])
+end
