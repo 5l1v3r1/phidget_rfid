@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Luis Fontes"]
   spec.email         = ["mail.fontes@gmail.com"]
 
-  spec.summary       = %q{PHIDGET RFID.}
-  spec.description   = %q{A simple console interface to work with PHIDGET RFID.}
+  spec.summary       = %q{PHIDGET RFID wrapper}
+  spec.description   = %q{A simple console app to work with PHIDGET RFID.}
   spec.homepage      = "https://github.com/luisfontes19/phidget_rfid"
   spec.license       = "MIT"
 
