@@ -4,12 +4,12 @@ This is a simple ruby program to work with the Phidget RFID in the console
 
 ## Installation:
 
-gem install phitdget_rfid
+gem install phidget_rfid
 
 
 ## Usage:
 ```
-phitdget_rfid
+phidget_rfid
 ```
 
 And then you can use the help command
