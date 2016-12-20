@@ -1,36 +1,36 @@
 module PhidgetRfid
   class RfidHandler
-    @rfid
+    @phidget
     @prompt
     @time
     attr_accessor :log
     
     def initialize()
-      @rfid = Phidgets::RFID.new
+      @phidget = Phidgets::RFID.new
       @time = Time.new
       @prompt = "at #{@time.strftime("%Y-%m-%d %H:%M:%S")} \033[0m"
       @log = ""
       
-      @rfid.on_detach  do |device, obj|
+      @phidget.on_detach  do |device, obj|
         @log.append "\n#{device.attributes.inspect} removed"
       end
       
-      @rfid.on_attach  do |device, obj|
-        @rfid.antenna = true
-        @rfid.led = false
+      @phidget.on_attach  do |device, obj|
+        @phidget.antenna = true
+        @phidget.led = false
       end
       
-      @rfid.on_error do |device, obj, code, description|
+      @phidget.on_error do |device, obj, code, description|
         @log << "\033[31m\nError #{code}: #{description} #{@prompt}" 
       end
       
-      @rfid.on_tag  do |device, tag, obj|
-        @rfid.led = true
+      @phidget.on_tag  do |device, tag, obj|
+        @phidget.led = true
         @log << "\n\033[32m[+] #{protocol} tag detected #{@prompt}" 
       end
       
-      @rfid.on_tag_lost do |device, tag, obj|
-        @rfid.led = false
+      @phidget.on_tag_lost do |device, tag, obj|
+        @phidget.led = false
         @log << "\n\033[33m[-] #{protocol} tag removed #{@prompt}"
       end
       
@@ -38,19 +38,28 @@ module PhidgetRfid
     end
     
     def protocol
-      if(@rfid.attached?)
-        @rfid.last_tag_protocol
+      if(@phidget.attached?)
+        @phidget.last_tag_protocol
       end
     end
     
     def read
-      if(@rfid.attached?)
-        @rfid.last_tag
+      if(@phidget.attached?)
+        @phidget.last_tag
       end
     end
     
-    def write(value, protocol = @rfid.last_tag_protocol, lock = false)
-      if(@rfid.attached?)
+    def write(value, protocol = nil, lock = false)
+      if (protocol == nil)
+        protocol = 
+          if @phidget.tag_present
+            @phidget.last_tag_protocol
+          else
+            "EM4100"
+          end
+      end
+
+      if(@phidget.attached?)
         p = protocol.to_sym
 
         if lock
@@ -58,19 +67,21 @@ module PhidgetRfid
           puts "Protocol: #{p}"
           puts "Are you sure you want to lock the RFID Tag? This will make it read-only (y/N)"
           r = gets.chomp
-          @rfid.write value, p, true if r == "y"
-
+          @phidget.write(value, p, true) if r == "y"
+        else
+          @phidget.write(value, p)
         end
+
 
       end
     end
     
     def device
       puts "Library Version: #{Phidgets::FFI.library_version}"
-      puts "Class: #{device.device_class}"
-      puts "Id: #{device.id}"
-      puts "Serial number: #{device.serial_number}"
-      puts "# Digital Outputs: #{device.outputs.size}"
+      puts "Class: #{@phidget.device_class}"
+      puts "Id: #{@phidget.id}"
+      puts "Serial number: #{@phidget.serial_number}"
+      puts "Digital Outputs: #{@phidget.outputs.size}"
     end
     
     
